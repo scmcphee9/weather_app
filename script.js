@@ -5,6 +5,23 @@ $("#searchBtn").on("click", function (event) {
 
   console.log(city);
 
+  if (city === "") {
+    return;
+  }
+
+  // local storage
+
+  var recentSearch = [];
+  recentSearch.push(city);
+  localStorage.setItem("cityRequest", JSON.stringify(recentSearch));
+  console.log(recentSearch);
+
+  for (var i = 0; i < recentSearch.length; i++) {
+    var savedSearch = localStorage.getItem(recentSearch[i]);
+  }
+  $("#recentSearch").append(savedSearch);
+
+  // variables for API links
   var currentWeather =
     "https://api.openweathermap.org/data/2.5/weather?q=" +
     city +
@@ -15,48 +32,48 @@ $("#searchBtn").on("click", function (event) {
     city +
     "&appid=d7ca7edce9a0915ba4502c508b220e07&units=imperial";
 
-  fetch(currentWeather)
-    .then(function (response) {
-      return response.json();
-    })
-    .then(function (data) {
-      console.log("current -------------------");
-      console.log(data);
+  // fetch requests on weather APIs
 
-      var lat = data.coord.lat;
-      var lon = data.coord.lon;
+  // fetch(currentWeather)
+  //   .then(function (response) {
+  //     return response.json();
+  //   })
+  //   .then(function (data) {
+  //     console.log("current -------------------");
+  //     console.log(data);
 
-      console.log(lat);
-      console.log(lon);
+  //     // defines lat and lon coordinates of searched city
+  //     var lat = data.coord.lat;
+  //     var lon = data.coord.lon;
 
-      var uvIndex =
-        "http://api.openweathermap.org/data/2.5/uvi?lat=" +
-        lat +
-        "&lon=" +
-        lon +
-        "&appid=d7ca7edce9a0915ba4502c508b220e07";
+  //     console.log(lat);
+  //     console.log(lon);
 
-      fetch(uvIndex)
-        .then(function (response) {
-          return response.json();
-        })
-        .then(function (data) {
-          console.log("UV Index ------------------");
-          console.log(data);
-        });
-    });
+  //     // defines UV index api url
+  //     var uvIndex =
+  //       "http://api.openweathermap.org/data/2.5/uvi?lat=" +
+  //       lat +
+  //       "&lon=" +
+  //       lon +
+  //       "&appid=d7ca7edce9a0915ba4502c508b220e07";
 
-  fetch(fiveDay)
-    .then(function (response) {
-      return response.json();
-    })
-    .then(function (data) {
-      console.log("five Day -----------------");
-      console.log(data);
-    });
+  //     // fetch request for uv index
+  //     fetch(uvIndex)
+  //       .then(function (response) {
+  //         return response.json();
+  //       })
+  //       .then(function (data) {
+  //         console.log("UV Index ------------------");
+  //         console.log(data);
+  //       });
+  //   });
+
+  // fetch(fiveDay)
+  //   .then(function (response) {
+  //     return response.json();
+  //   })
+  //   .then(function (data) {
+  //     console.log("five Day -----------------");
+  //     console.log(data);
+  //   });
 });
-
-// var locationAPI =
-//   "https://maps.googleapis.com/maps/api/geocode/json?address=" + city + "&key";
-
-//   http://open.mapquestapi.com/geocoding/v1/address
