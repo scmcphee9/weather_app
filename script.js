@@ -46,11 +46,6 @@ $("#searchBtn").on("click", function (event) {
     city +
     "&appid=d7ca7edce9a0915ba4502c508b220e07&units=imperial";
 
-  var fiveDay =
-    "https://api.openweathermap.org/data/2.5/forecast?q=" +
-    city +
-    "&appid=d7ca7edce9a0915ba4502c508b220e07&units=imperial";
-
   // fetch request on current weather APIs
 
   fetch(currentWeather)
@@ -126,47 +121,53 @@ $("#searchBtn").on("click", function (event) {
           var cityUVIndex = $("<p>").text("UV Index: " + currentUVIndex);
           $("#currentWeather").append(cityUVIndex);
         });
-    });
 
-  // fetches 5day forecast api
-  fetch(fiveDay)
-    .then(function (response) {
-      return response.json();
-    })
-    .then(function (data) {
-      console.log("five Day -----------------");
-      console.log(data);
+      var fiveDay =
+        "https://api.openweathermap.org/data/2.5/onecall?lat=" +
+        lat +
+        "&lon=" +
+        lon +
+        "&exclude=current,minutely,hourly,alerts&units=imperial&appid=d7ca7edce9a0915ba4502c508b220e07";
+      // fetches 5day forecast api
+      fetch(fiveDay)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          console.log("five Day -----------------");
+          console.log(data);
 
-      var day = [1, 2, 3, 4, 5];
+          var day = [1, 2, 3, 4, 5];
 
-      // for loop to pull the first 5 days from the array of information in the api
+          // for loop to pull the first 5 days from the array of information in the api
 
-      for (var i = 0; i < 5; i++) {
-        function toLocalDate(unixTime) {
-          var unixDate = new Date(unixTime * 1000);
-          return unixDate.toLocaleDateString("en-US");
-        }
+          for (var i = 0; i < 5; i++) {
+            function toLocalDate(unixTime) {
+              var unixDate = new Date(unixTime * 1000);
+              return unixDate.toLocaleDateString("en-US");
+            }
 
-        var dayTemp = data.list[i].main.temp + " °F";
-        var dayHumid = data.list[i].main.humidity + "%";
-        var dayDate = data.list[i].dt;
-        var dayIcon = data.list[i].weather[0].icon;
-        var dayWeatherIcon =
-          "<img src='http://openweathermap.org/img/wn/" +
-          dayIcon +
-          "@2x.png' width='60'></img>";
+            var dayTemp = data.daily[i].temp.day + " °F";
+            var dayHumid = data.daily[i].humidity + "%";
+            var dayDate = data.daily[i].dt;
+            var dayIcon = data.daily[i].weather[0].icon;
+            var dayWeatherIcon =
+              "<img src='http://openweathermap.org/img/wn/" +
+              dayIcon +
+              "@2x.png' width='60'></img>";
 
-        var daysDates = $("<p>").text(toLocalDate(dayDate));
-        $(`#day_${day[i]}`).append(daysDates);
+            var daysDates = $("<p>").text(toLocalDate(dayDate));
+            $(`#day_${day[i]}`).append(daysDates);
 
-        $(`#day_${day[i]}`).append(dayWeatherIcon);
+            $(`#day_${day[i]}`).append(dayWeatherIcon);
 
-        var daysTemps = $("<p>").text("Temperature: " + dayTemp);
-        $(`#day_${day[i]}`).append(daysTemps);
+            var daysTemps = $("<p>").text("Temperature: " + dayTemp);
+            $(`#day_${day[i]}`).append(daysTemps);
 
-        var daysHumids = $("<p>").text("Humidity: " + dayHumid);
-        $(`#day_${day[i]}`).append(daysHumids);
-        // for loop to pull each object for future days
-      }
+            var daysHumids = $("<p>").text("Humidity: " + dayHumid);
+            $(`#day_${day[i]}`).append(daysHumids);
+            // for loop to pull each object for future days
+          }
+        });
     });
 });
