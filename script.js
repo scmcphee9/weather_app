@@ -4,25 +4,26 @@ var recentSearch =
 var ulEl = $("#recentSearch");
 var cardEl = $("#currentWeather");
 
+// onclick event to trigger all of the following API calls,
+
 $("#searchBtn").on("click", function (event) {
   event.preventDefault();
 
+  // input for city to search
   var city = $("#cityInput").val();
-
-  console.log(city);
 
   if (city === "") {
     return;
   }
 
   // local storage
-
+  // this will put the new search item to the front of the array it is creating
   recentSearch.unshift(city);
+
   function localStorageSave() {
     localStorage.setItem(key, JSON.stringify(recentSearch));
   }
   localStorageSave();
-  //this does not appear to be pushing to recent search array
 
   console.log(recentSearch);
 
@@ -50,7 +51,7 @@ $("#searchBtn").on("click", function (event) {
     city +
     "&appid=d7ca7edce9a0915ba4502c508b220e07&units=imperial";
 
-  // fetch requests on weather APIs
+  // fetch request on current weather APIs
 
   fetch(currentWeather)
     .then(function (response) {
@@ -58,26 +59,48 @@ $("#searchBtn").on("click", function (event) {
     })
     .then(function (data) {
       console.log("current -------------------");
-      //console.log(data);
+      console.log(data);
 
-      // defines lat and lon coordinates of searched city
+      // defines lat and lon coordinates of searched city for inner fetch call for uv index
       var lat = data.coord.lat;
       var lon = data.coord.lon;
-      //var currentDate =
-      var currentCity = data.name + "(date)";
+      // console.log(lat);
+      // console.log(lon);
+
+      // defines all the information that we need to display for the current weather
+      var todaysDate = new Date();
+      var todaysDateString = todaysDate.toLocaleDateString();
+      var currentCity = data.name;
       var currentTemp = data.main.temp + " °F";
       var currentHumid = data.main.humidity + "%";
       var currentWind = data.wind.speed + " mph";
-      console.log(currentCity);
-      console.log(currentTemp);
-      console.log(currentHumid);
-      console.log(currentWind);
+      var currentWeather = data.weather[0].icon;
+      var currentWeatherIcon =
+        "<img src='http://openweathermap.org/img/wn/" +
+        currentWeather +
+        "@2x.png' width='60'></img>";
+      // console.log(currentCity);
+      // console.log(currentTemp);
+      // console.log(currentHumid);
+      // console.log(currentWind);
 
-      var cityTitle = $("<h4>").text(currentCity);
+      // appends all of the variable information into the html with id currentWeather
+
+      var cityTitle = $("<h4>").text(
+        currentCity + " (" + todaysDateString + ")"
+      );
       $("#currentWeather").append(cityTitle);
 
-      // console.log(lat);
-      // console.log(lon);
+      $("#currentWeather").append(currentWeatherIcon);
+
+      var cityTemp = $("<p>").text("Temperature: " + currentTemp);
+      $("#currentWeather").append(cityTemp);
+
+      var cityHumid = $("<p>").text("Humidity: " + currentHumid);
+      $("#currentWeather").append(cityHumid);
+
+      var cityWind = $("<p>").text("Wind Speed: " + currentWind);
+      $("#currentWeather").append(cityWind);
 
       // defines UV index api url
       var uvIndex =
@@ -96,10 +119,16 @@ $("#searchBtn").on("click", function (event) {
           console.log("UV Index ------------------");
           // console.log(data);
           var currentUVIndex = data.value;
+          currentUVIndex = currentUVIndex;
           console.log(currentUVIndex);
+
+          // appends uv Index
+          var cityUVIndex = $("<p>").text("UV Index: " + currentUVIndex);
+          $("#currentWeather").append(cityUVIndex);
         });
     });
 
+  // fetches 5day forecast api
   fetch(fiveDay)
     .then(function (response) {
       return response.json();
@@ -108,6 +137,36 @@ $("#searchBtn").on("click", function (event) {
       console.log("five Day -----------------");
       console.log(data);
 
-      // for loop to pull each object for future days
+      var day = [1, 2, 3, 4, 5];
+
+      // for loop to pull the first 5 days from the array of information in the api
+
+      for (var i = 0; i < 5; i++) {
+        function toLocalDate(unixTime) {
+          var unixDate = new Date(unixTime * 1000);
+          return unixDate.toLocaleDateString("en-US");
+        }
+
+        var dayTemp = data.list[i].main.temp + " °F";
+        var dayHumid = data.list[i].main.humidity + "%";
+        var dayDate = data.list[i].dt;
+        var dayIcon = data.list[i].weather[0].icon;
+        var dayWeatherIcon =
+          "<img src='http://openweathermap.org/img/wn/" +
+          dayIcon +
+          "@2x.png' width='60'></img>";
+
+        var daysDates = $("<p>").text(toLocalDate(dayDate));
+        $(`#day_${day[i]}`).append(daysDates);
+
+        $(`#day_${day[i]}`).append(dayWeatherIcon);
+
+        var daysTemps = $("<p>").text("Temperature: " + dayTemp);
+        $(`#day_${day[i]}`).append(daysTemps);
+
+        var daysHumids = $("<p>").text("Humidity: " + dayHumid);
+        $(`#day_${day[i]}`).append(daysHumids);
+        // for loop to pull each object for future days
+      }
     });
 });
