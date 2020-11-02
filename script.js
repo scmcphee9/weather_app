@@ -137,11 +137,11 @@ $("#searchBtn").on("click", function (event) {
           console.log("five Day -----------------");
           console.log(data);
 
-          var day = [1, 2, 3, 4, 5];
+          var day = [0, 1, 2, 3, 4, 5];
 
           // for loop to pull the first 5 days from the array of information in the api
 
-          for (var i = 0; i < 5; i++) {
+          for (var i = 1; i < 6; i++) {
             function toLocalDate(unixTime) {
               var unixDate = new Date(unixTime * 1000);
               return unixDate.toLocaleDateString("en-US");
