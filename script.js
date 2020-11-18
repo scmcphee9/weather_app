@@ -8,6 +8,8 @@ var cardEl = $("#currentWeather");
 
 $("#searchBtn").on("click", function (event) {
   event.preventDefault();
+  $("#recentSearch").empty();
+  $(".clearWeather").empty();
 
   // input for city to search
   var city = $("#cityInput").val();
@@ -29,6 +31,7 @@ $("#searchBtn").on("click", function (event) {
 
   function makeHistory(city) {
     console.log(city);
+
     var liEl = $("<li>").addClass("cityList").text(city);
     $("#recentSearch").append(liEl);
   }
